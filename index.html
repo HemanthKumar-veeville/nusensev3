@@ -38,19 +38,8 @@
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3); /* Subtle glowing effect */
       pointer-events: none;
       opacity: 1;
-      transition: opacity 3s ease-in-out; /* Slow and cinematic fade */
+      transition: opacity 1s ease-in-out; /* Faster cinematic fade (1s) */
       font-family: 'Roboto', sans-serif; /* Initial font */
-      animation: zoomInOut 10s infinite; /* Subtle zoom effect */
-    }
-
-    /* Subtle zoom effect keyframes */
-    @keyframes zoomInOut {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.05);
-      }
     }
 
     .hidden {
@@ -86,6 +75,8 @@
     const ctx = canvas.getContext('2d');
     const title = document.getElementById('title');
     
+    let textVisible = true; // Track if the text is visible or hidden
+
     function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -125,7 +116,20 @@
             this.targetX = this.x + Math.cos(this.angle) * 100;
             this.targetY = this.y + Math.sin(this.angle) * 100;
           }
+        } else if (!textVisible) {
+          // When the text is hidden, move particles toward the center
+          const textX = canvas.width / 2;
+          const textY = canvas.height / 2;
+          const dx = textX - this.x;
+          const dy = textY - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 200) {
+            this.targetX = textX + (Math.random() - 0.5) * 50;
+            this.targetY = textY + (Math.random() - 0.5) * 50;
+          }
         } else {
+          // When text is visible, scatter particles
           this.angle += 0.02;
           const distanceFromCenter = 200 + Math.sin(this.wobble) * 50;
           this.targetX = canvas.width / 2 + Math.cos(this.angle) * distanceFromCenter;
@@ -201,18 +205,21 @@
       "'Raleway', sans-serif"
     ];
 
-    // Function to change fonts every 6 seconds with slow fade-in/fade-out
+    // Function to change fonts every 6 seconds with faster fade-in/fade-out
     let fontIndex = 0;
     function changeFont() {
       title.classList.add('hidden'); // Start fading out
+      textVisible = false; // Particles will cover the text when hidden
+
       setTimeout(() => {
         fontIndex = (fontIndex + 1) % fonts.length;
         title.style.fontFamily = fonts[fontIndex]; // Change the font
         title.classList.remove('hidden'); // Fade back in
-      }, 3000); // Delay matches the fade-out transition duration
+        textVisible = true; // Particles will scatter away to reveal the text
+      }, 1000); // Faster fade-out duration (1s)
     }
 
-    // Change font every 6 seconds to allow a slow, cinematic transition
+    // Change font every 6 seconds
     setInterval(changeFont, 6000);
   </script>
 </body>
