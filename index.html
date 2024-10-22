@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Particle Animation</title>
+
+  <!-- Link to Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&family=Lobster&family=Poppins:wght@800&family=Pacifico&family=Raleway:wght@900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: monospace;
+    }
+
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .title {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 72px;
+      font-weight: bold;
+      z-index: 2;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3); /* Subtle glowing effect */
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 3s ease-in-out; /* Slow and cinematic fade */
+      font-family: 'Roboto', sans-serif; /* Initial font */
+      animation: zoomInOut 10s infinite; /* Subtle zoom effect */
+    }
+
+    /* Subtle zoom effect keyframes */
+    @keyframes zoomInOut {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+
+    .hidden {
+      opacity: 0; /* Fade out */
+    }
+
+    /* Responsive text size based on screen width */
+    @media (max-width: 1200px) {
+      .title {
+        font-size: 60px;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .title {
+        font-size: 48px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .title {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div class="title" id="title">NUSENSE</div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const title = document.getElementById('title');
+    
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.targetX = x;
+        this.targetY = y;
+        this.vx = (Math.random() - 0.5) * 1;
+        this.vy = (Math.random() - 0.5) * 1;
+        this.radius = 1.5;
+        this.color = `hsla(${Math.random() * 360}, 50%, 50%, 0.8)`;
+        this.speed = Math.random() * 0.5 + 0.5;
+        this.angle = Math.random() * Math.PI * 2;
+        this.wobble = Math.random() * Math.PI * 2;
+      }
+
+      update(mouseX, mouseY) {
+        this.wobble += 0.05;
+
+        if (mouseX !== undefined && mouseY !== undefined) {
+          const dx = mouseX - this.x;
+          const dy = mouseY - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = 150;
+
+          if (distance < maxDistance) {
+            const angle = Math.atan2(dy, dx);
+            this.targetX = mouseX + Math.cos(angle) * (50 + Math.sin(this.wobble) * 20);
+            this.targetY = mouseY + Math.sin(angle) * (50 + Math.sin(this.wobble) * 20);
+          } else {
+            this.targetX = this.x + Math.cos(this.angle) * 100;
+            this.targetY = this.y + Math.sin(this.angle) * 100;
+          }
+        } else {
+          this.angle += 0.02;
+          const distanceFromCenter = 200 + Math.sin(this.wobble) * 50;
+          this.targetX = canvas.width / 2 + Math.cos(this.angle) * distanceFromCenter;
+          this.targetY = canvas.height / 2 + Math.sin(this.angle) * distanceFromCenter;
+        }
+
+        this.x += (this.targetX - this.x) * 0.05 * this.speed;
+        this.y += (this.targetY - this.y) * 0.05 * this.speed;
+
+        this.x += Math.sin(this.wobble) * 0.5;
+        this.y += Math.cos(this.wobble) * 0.5;
+
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    const numParticles = Math.floor((window.innerWidth * window.innerHeight) / 1000);
+    const particles = [];
+    for (let i = 0; i < numParticles; i++) {
+      particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+    }
+
+    let mouse = { x: undefined, y: undefined };
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0,0,0,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle) => {
+        particle.update(mouse.x, mouse.y);
+        particle.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    canvas.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    canvas.addEventListener('mouseout', () => {
+      mouse.x = undefined;
+      mouse.y = undefined;
+    });
+
+    window.addEventListener('resize', () => {
+      resize();
+      const newParticleCount = Math.floor((window.innerWidth * window.innerHeight) / 1000);
+      while (particles.length < newParticleCount) {
+        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+      }
+      particles.length = newParticleCount;
+    });
+
+    // Fonts to cycle through
+    const fonts = [
+      "'Roboto', sans-serif",
+      "'Lobster', cursive",
+      "'Poppins', sans-serif",
+      "'Pacifico', cursive",
+      "'Raleway', sans-serif"
+    ];
+
+    // Function to change fonts every 6 seconds with slow fade-in/fade-out
+    let fontIndex = 0;
+    function changeFont() {
+      title.classList.add('hidden'); // Start fading out
+      setTimeout(() => {
+        fontIndex = (fontIndex + 1) % fonts.length;
+        title.style.fontFamily = fonts[fontIndex]; // Change the font
+        title.classList.remove('hidden'); // Fade back in
+      }, 3000); // Delay matches the fade-out transition duration
+    }
+
+    // Change font every 6 seconds to allow a slow, cinematic transition
+    setInterval(changeFont, 6000);
+  </script>
+</body>
+</html>
