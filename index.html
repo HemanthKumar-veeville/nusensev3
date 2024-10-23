@@ -8,7 +8,6 @@
 
     <link rel="icon" href="./icons8-creative-64.png" type="image/x-icon" />
 
-    <!-- Link to Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&family=Lobster&family=Poppins:wght@800&family=Pacifico&family=Raleway:wght@900&display=swap"
       rel="stylesheet"
@@ -39,18 +38,18 @@
         font-weight: bold;
         z-index: 2;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
-          0 0 15px rgba(255, 255, 255, 0.3); /* Subtle glowing effect */
+          0 0 15px rgba(255, 255, 255, 0.3);
         pointer-events: none;
         opacity: 0.7;
-        transition: opacity 1s ease-in-out; /* Faster cinematic fade (1s) */
-        font-family: "Roboto", sans-serif; /* Initial font */
+        transition: opacity 1s ease-in-out;
+        font-family: "Roboto", sans-serif;
+        user-select: none;
       }
 
       .hidden {
-        opacity: 0; /* Fade out */
+        opacity: 0;
       }
 
-      /* Responsive text size based on screen width */
       @media (max-width: 1200px) {
         .title {
           font-size: 60px;
@@ -79,7 +78,12 @@
       const ctx = canvas.getContext("2d");
       const title = document.getElementById("title");
 
-      let textVisible = true; // Track if the text is visible or hidden
+      let textVisible = true;
+      let currentFormation = "circle";
+      let mouse = { x: undefined, y: undefined };
+      // Add this variable at the top with other variables
+      let lastInteractionTime = 0;
+      const resetDelay = 2000; // 2 seconds without interaction before reset
 
       function resize() {
         canvas.width = window.innerWidth;
@@ -87,6 +91,49 @@
       }
       resize();
       window.addEventListener("resize", resize);
+
+      function getShapeVertices(sides, width, height) {
+        const baseSize = Math.min(width, height) * 0.4;
+        const size = baseSize * 1.25;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const angleStep = (2 * Math.PI) / sides;
+        const rotationOffset = -Math.PI / 2;
+
+        const vertices = [];
+        for (let i = 0; i < sides; i++) {
+          vertices.push({
+            x: centerX + size * Math.cos(i * angleStep + rotationOffset),
+            y: centerY + size * Math.sin(i * angleStep + rotationOffset),
+          });
+        }
+        return vertices;
+      }
+
+      function getShapeVerticesByFormation(formation, width, height) {
+        switch (formation) {
+          case "circle":
+            return getShapeVertices(32, width, height);
+          case "triangle":
+            return getShapeVertices(3, width, height);
+          case "square":
+            return getShapeVertices(4, width, height);
+          case "pentagon":
+            return getShapeVertices(5, width, height);
+          case "hexagon":
+            return getShapeVertices(6, width, height);
+          case "heptagon":
+            return getShapeVertices(7, width, height);
+          case "octagon":
+            return getShapeVertices(8, width, height);
+          case "nonagon":
+            return getShapeVertices(9, width, height);
+          case "decagon":
+            return getShapeVertices(10, width, height);
+          default:
+            return getShapeVertices(3, width, height);
+        }
+      }
 
       class Particle {
         constructor(x, y) {
@@ -123,7 +170,6 @@
               this.targetY = this.y + Math.sin(this.angle) * 100;
             }
           } else if (!textVisible) {
-            // When the text is hidden, move particles toward the center
             const textX = canvas.width / 2;
             const textY = canvas.height / 2;
             const dx = textX - this.x;
@@ -135,13 +181,38 @@
               this.targetY = textY + (Math.random() - 0.5) * 50;
             }
           } else {
-            // When text is visible, scatter particles
             this.angle += 0.02;
             const distanceFromCenter = 200 + Math.sin(this.wobble) * 50;
-            this.targetX =
-              canvas.width / 2 + Math.cos(this.angle) * distanceFromCenter;
-            this.targetY =
-              canvas.height / 2 + Math.sin(this.angle) * distanceFromCenter;
+
+            if (currentFormation === "circle") {
+              this.targetX =
+                canvas.width / 2 + Math.cos(this.angle) * distanceFromCenter;
+              this.targetY =
+                canvas.height / 2 + Math.sin(this.angle) * distanceFromCenter;
+            } else {
+              const shapeVertices = getShapeVerticesByFormation(
+                currentFormation,
+                canvas.width,
+                canvas.height
+              );
+              const totalLength = shapeVertices.length;
+              const anglePerSegment = (Math.PI * 2) / totalLength;
+              const segment =
+                Math.floor(this.angle / anglePerSegment) % totalLength;
+              const nextSegment = (segment + 1) % totalLength;
+              const segmentProgress =
+                (this.angle % anglePerSegment) / anglePerSegment;
+
+              const currentVertex = shapeVertices[segment];
+              const nextVertex = shapeVertices[nextSegment];
+
+              this.targetX =
+                currentVertex.x * (1 - segmentProgress) +
+                nextVertex.x * segmentProgress;
+              this.targetY =
+                currentVertex.y * (1 - segmentProgress) +
+                nextVertex.y * segmentProgress;
+            }
           }
 
           this.x += (this.targetX - this.x) * 0.05 * this.speed;
@@ -176,8 +247,6 @@
           )
         );
       }
-
-      let mouse = { x: undefined, y: undefined };
 
       function animate() {
         ctx.fillStyle = "rgba(0,0,0,0.05)";
@@ -218,7 +287,29 @@
         particles.length = newParticleCount;
       });
 
-      // Fonts to cycle through
+      // After line 289 (after the mouseout event listener), add these event listeners:
+
+      canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault(); // Prevent scrolling while touching canvas
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = touch.clientX - rect.left;
+        mouse.y = touch.clientY - rect.top;
+        lastInteractionTime = Date.now();
+      });
+
+      canvas.addEventListener("touchend", () => {
+        mouse.x = undefined;
+        mouse.y = undefined;
+        lastInteractionTime = Date.now();
+      });
+
+      canvas.addEventListener("touchcancel", () => {
+        mouse.x = undefined;
+        mouse.y = undefined;
+        lastInteractionTime = Date.now();
+      });
+
       const fonts = [
         "'Lobster', cursive",
         "'Poppins', sans-serif",
@@ -226,22 +317,37 @@
         "'Raleway', sans-serif",
       ];
 
-      // Function to change fonts every 6 seconds with faster fade-in/fade-out
       let fontIndex = 0;
       function changeFont() {
-        title.classList.add("hidden"); // Start fading out
-        textVisible = false; // Particles will cover the text when hidden
+        title.classList.add("hidden");
+        textVisible = false;
 
         setTimeout(() => {
           fontIndex = (fontIndex + 1) % fonts.length;
-          title.style.fontFamily = fonts[fontIndex]; // Change the font
-          title.classList.remove("hidden"); // Fade back in
-          textVisible = true; // Particles will scatter away to reveal the text
-        }, 1000); // Faster fade-out duration (1s)
+          title.style.fontFamily = fonts[fontIndex];
+          title.classList.remove("hidden");
+          textVisible = true;
+        }, 1000);
       }
 
-      // Change font every 6 seconds
+      function toggleFormation() {
+        const formations = [
+          "circle",
+          "triangle",
+          "square",
+          "pentagon",
+          "hexagon",
+          "heptagon",
+          "octagon",
+          "nonagon",
+          "decagon",
+        ];
+        const currentIndex = formations.indexOf(currentFormation);
+        currentFormation = formations[(currentIndex + 1) % formations.length];
+      }
+
       setInterval(changeFont, 6000);
+      setInterval(toggleFormation, 6000);
     </script>
   </body>
 </html>
