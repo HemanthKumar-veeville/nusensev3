@@ -200,8 +200,9 @@
               const segment =
                 Math.floor(this.angle / anglePerSegment) % totalLength;
               const nextSegment = (segment + 1) % totalLength;
-              const segmentProgress =
+              let segmentProgress =
                 (this.angle % anglePerSegment) / anglePerSegment;
+              segmentProgress = Math.pow(segmentProgress, 0.3);
 
               const currentVertex = shapeVertices[segment];
               const nextVertex = shapeVertices[nextSegment];
@@ -209,6 +210,7 @@
               this.targetX =
                 currentVertex.x * (1 - segmentProgress) +
                 nextVertex.x * segmentProgress;
+
               this.targetY =
                 currentVertex.y * (1 - segmentProgress) +
                 nextVertex.y * segmentProgress;
