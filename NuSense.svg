@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW 2019 (64-Bit) -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="3.79552in" height="0.59065in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 3046.64 474.11"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <font id="FontID0" horiz-adv-x="752" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="400">
+	<font-face 
+		font-family="Unesa">
+		<font-face-src>
+			<font-face-name name="Unesa-Regular"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="E" horiz-adv-x="624" d="M598.001 503l0 197 -574 0 0 -197 574 0zm-352.999 -503l352.999 0 0 197 -292.002 0c-39.9985,0 -60.0001,3.99937 -60.0001,28.0004 0,22.9988 20.0016,26.9981 60.0001,26.9981l292.002 0 0 197 -346.003 0c-317.998,0 -317,-448.998 -6.99651,-448.998z"/>
+   <glyph unicode="N" horiz-adv-x="761" d="M497.998 700l0 -313.001 -234.999 313.001 -232.999 0 0 -700 232.999 0 0 339.001 251.001 -339.001 217.002 0 0 700 -233.004 0z"/>
+   <glyph unicode="S" horiz-adv-x="619" d="M309.999 503l292.002 0 0 197 -352.999 0c-310.004,0 -311.001,-448.998 6.99651,-448.998l69.0011 0c29.0026,-1.00223 44.0026,-7.00128 44.0026,-26.0007 0,-24.001 -20.0016,-28.0004 -60.0001,-28.0004l-292.002 0 0 -197 352.002 0c310.996,0 311.999,448.998 -6.00383,448.998l-68.9963 0c-29.0026,1.00223 -44.0026,7.00128 -44.0026,27.0029 0,24.001 20.0016,26.9981 60.0001,26.9981z"/>
+   <glyph unicode="U" horiz-adv-x="634" d="M375.001 700l0 -414.999c0,-37.9988 -9.99843,-84.0011 -58.0004,-84.0011 -56.0007,0 -58.9979,46.0023 -58.9979,84.0011l0 414.999 -233.004 0 0 -504.002c0,-107.997 88.0005,-195.998 196.003,-195.998l191.001 0c107.997,0 195.998,88.0005 195.998,195.998l0 504.002 -232.999 0z"/>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"Unesa";font-variant:normal;font-style:normal;font-weight:normal;src:url("#FontID0") format(svg)}
+    .fil0 {fill:#FEFEFE}
+    .fnt0 {font-weight:normal;font-size:662.17px;font-family:'Unesa'}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <text x="-19.87" y="467.49"  class="fil0 fnt0">NUSEN</text>
+  <text x="2235.48" y="467.49"  class="fil0 fnt0">S</text>
+  <text x="2645.36" y="467.49"  class="fil0 fnt0">E</text>
+ </g>
+</svg>
